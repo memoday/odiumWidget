@@ -19,6 +19,7 @@ def resource_path(relative_path):
 
 form = resource_path('ui/main.ui')
 icon = resource_path('assets/ico.jpg')
+symbol = resource_path('assets/odium.png')
 
 global value
 
@@ -78,7 +79,7 @@ class WindowClass(QWidget, form_class):
         flags = Qt.WindowFlags(Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnBottomHint)
         self.setWindowFlags(flags)
         self.setAttribute(Qt.WA_TranslucentBackground) #투명배경 적용
-        self.label.setPixmap(QPixmap("assets/odium.png"))
+        self.label.setPixmap(QPixmap(symbol))
         self.label_value.setText(str(value))
         self.show()
     
