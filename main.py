@@ -9,6 +9,7 @@ import time
 from datetime import datetime
 from requests_html import HTMLSession
 import re
+import webbrowser
 
 __version__ = 'v1.0.0'
 
@@ -40,7 +41,9 @@ class SystemTrayIcon(QSystemTrayIcon):
         QSystemTrayIcon.__init__(self, icon, parent)
         menu = QMenu(parent)
 
-        infoAction = menu.addAction('제작자 | 오로라/창일')
+        infoAction = menu.addAction('프로그램 정보')
+        creator = menu.addAction('제작자 | 오로라/창일')
+        infoAction.triggered.connect(lambda: webbrowser.open_new_tab('https://github.com/memoday/odiumWidget'))
         menu.addSeparator()
         exitAction = menu.addAction("종료") 
         exitAction.triggered.connect(QCoreApplication.instance().quit)
@@ -59,6 +62,7 @@ class Thread1(QThread):
         self.parent = parent
 
 
+
 class WindowClass(QWidget, form_class):
 
     def __init__(self):
@@ -66,7 +70,7 @@ class WindowClass(QWidget, form_class):
         self.setupUi(self)
 
         shadow = QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(10)
+        shadow.setBlurRadius(15)
 
         self.offset = None
 
@@ -75,7 +79,6 @@ class WindowClass(QWidget, form_class):
 
         try: 
             self.move(int(posX),int(posY))
-            print('try success')
         except: 
             self.move(1650, 20)
 
@@ -126,32 +129,40 @@ class WindowClass(QWidget, form_class):
         x.start()
 
     def rightMenu(self, pos):
-         menu = QMenu()
+        menu = QMenu()
 
-         # Add menu options
-         onTop = menu.addAction('항상 위에 있기')
-         changeColor = menu.addMenu('색깔 변경')
-         changeRed = changeColor.addAction('빨간색')
-         changeOrange = changeColor.addAction('주황색')
-         changeYellow = changeColor.addAction('노란색')
-         changeGreen = changeColor.addAction('초록색')
-         changeBlue = changeColor.addAction('파란색')
-         changeWhite = changeColor.addAction('하얀색')
-         changeBlack = changeColor.addAction('검정색')
+        # Add menu options
+        #  onTop = menu.addAction('항상 위에 있기')
+
+        changeBG = menu.addAction('배경 제거')
+        changeColor = menu.addMenu('색깔 변경')
+        changeRed = changeColor.addAction('빨간색')
+        changeOrange = changeColor.addAction('주황색')
+        changeYellow = changeColor.addAction('노란색')
+        changeGreen = changeColor.addAction('초록색')
+        changeBlue = changeColor.addAction('파란색')
+        changeWhite = changeColor.addAction('하얀색')
+        changeBlack = changeColor.addAction('검정색')
 
 
-         # Menu option events
-         onTop.triggered.connect(lambda: print('hi'))
-         changeRed.triggered.connect(lambda: self.label_value.setStyleSheet("color: red"))
-         changeOrange.triggered.connect(lambda: self.label_value.setStyleSheet("color: orange"))
-         changeYellow.triggered.connect(lambda: self.label_value.setStyleSheet("color: yellow"))
-         changeGreen.triggered.connect(lambda: self.label_value.setStyleSheet("color: green"))
-         changeBlue.triggered.connect(lambda: self.label_value.setStyleSheet("color: blue"))
-         changeWhite.triggered.connect(lambda: self.label_value.setStyleSheet("color: white"))
-         changeBlack.triggered.connect(lambda: self.label_value.setStyleSheet("color: black"))
+        # Menu option events
+        changeBG.triggered.connect(lambda: self.label_bg.hide())
+        changeRed.triggered.connect(lambda: self.label_value.setStyleSheet("color: red"))
+        changeOrange.triggered.connect(lambda: self.label_value.setStyleSheet("color: orange"))
+        changeYellow.triggered.connect(lambda: self.label_value.setStyleSheet("color: yellow"))
+        changeGreen.triggered.connect(lambda: self.label_value.setStyleSheet("color: green"))
+        changeBlue.triggered.connect(lambda: self.label_value.setStyleSheet("color: blue"))
+        changeWhite.triggered.connect(lambda: self.label_value.setStyleSheet("color: white"))
+        changeBlack.triggered.connect(lambda: self.label_value.setStyleSheet("color: black"))
 
-         # Position
-         menu.exec_(self.mapToGlobal(pos))
+        # Position
+        menu.exec_(self.mapToGlobal(pos))
+    
+    def changeBG(self):
+        if self.label_bg.isHidden():
+            self.label_bg.show()
+        else:
+            self.label_bg.hide()
 
     def exit(self):
         sys.exit(0)
