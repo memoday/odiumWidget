@@ -41,7 +41,7 @@ class SystemTrayIcon(QSystemTrayIcon):
         menu = QMenu(parent)
 
         infoAction = menu.addAction('제작자 | 오로라/창일')
-
+        menu.addSeparator()
         exitAction = menu.addAction("종료") 
         exitAction.triggered.connect(QCoreApplication.instance().quit)
 
@@ -70,9 +70,11 @@ class WindowClass(QWidget, form_class):
 
         self.offset = None
 
-        self.settings = QSettings()
+        self.settings = QSettings('memoday','odiumWidget')
+        posX, posY = (self.settings.value('pos')).split(',')
+
         try: 
-            self.move(self.settings.value('pos'))
+            self.move(int(posX),int(posY))
             print('try success')
         except: 
             self.move(1650, 20)
@@ -112,7 +114,6 @@ class WindowClass(QWidget, form_class):
     def mouseReleaseEvent(self, event):
         str1 = str(self.pos())
         pos = re.findall('\(([^)]+)', str1)
-        print(pos[0])
         self.settings.setValue('pos',pos[0])
 
 
