@@ -1,4 +1,3 @@
-import requests
 from bs4 import BeautifulSoup
 import datetime
 from PyQt5 import uic
@@ -9,6 +8,7 @@ import os, sys
 import time
 from datetime import datetime
 from requests_html import HTMLSession
+import re
 
 __version__ = 'v1.0.0'
 
@@ -20,6 +20,7 @@ def resource_path(relative_path):
 form = resource_path('ui/main.ui')
 icon = resource_path('assets/ico.jpg')
 symbol = resource_path('assets/odium.png')
+bg = resource_path('assets/bg.png')
 
 global value
 
@@ -63,13 +64,23 @@ class WindowClass(QWidget, form_class):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(10)
+
         self.offset = None
-        
-        self.move(1650,20)
+
+        self.settings = QSettings()
+        try: 
+            self.move(self.settings.value('pos'))
+            print('try success')
+        except: 
+            self.move(1650, 20)
+
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.rightMenu)
-        
+    
 
         #프로그램 기본설정
         self.setWindowIcon(QIcon(icon))
@@ -80,7 +91,9 @@ class WindowClass(QWidget, form_class):
         self.setWindowFlags(flags)
         self.setAttribute(Qt.WA_TranslucentBackground) #투명배경 적용
         self.label.setPixmap(QPixmap(symbol))
+        self.label_bg.setPixmap(QPixmap(bg))
         self.label_value.setText(str(value))
+        self.label_value.setGraphicsEffect(shadow)
         self.show()
     
 
@@ -97,6 +110,12 @@ class WindowClass(QWidget, form_class):
             super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
+        str1 = str(self.pos())
+        pos = re.findall('\(([^)]+)', str1)
+        print(pos[0])
+        self.settings.setValue('pos',pos[0])
+
+
         self.offset = None
         super().mouseReleaseEvent(event)
 

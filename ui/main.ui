@@ -31,10 +31,11 @@
    </property>
    <property name="font">
     <font>
-     <family>나눔바른고딕Web</family>
-     <pointsize>12</pointsize>
+     <family>Times New Roman</family>
+     <pointsize>14</pointsize>
      <weight>50</weight>
      <bold>false</bold>
+     <stylestrategy>PreferAntialias</stylestrategy>
     </font>
    </property>
    <property name="mouseTracking">
@@ -78,6 +79,34 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
+  <widget class="QLabel" name="label_bg">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>250</width>
+     <height>230</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Agency FB</family>
+     <pointsize>48</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: red</string>
+   </property>
+   <property name="text">
+    <string>BG</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <zorder>label_bg</zorder>
+  <zorder>label</zorder>
+  <zorder>label_value</zorder>
  </widget>
  <resources/>
  <connections/>
