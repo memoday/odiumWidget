@@ -11,7 +11,7 @@ from requests_html import HTMLSession
 import re
 import webbrowser
 
-__version__ = 'v1.0.0'
+__version__ = 'v1.0.0-alpha'
 
 
 def resource_path(relative_path):
@@ -23,12 +23,13 @@ icon = resource_path('assets/ico.jpg')
 symbol = resource_path('assets/odium.png')
 bg = resource_path('assets/bg.png')
 
-global value
+def updateValue():
+    global value
 
-session = HTMLSession()
-r = session.get('http://odium.kr')
-r.html.render()
-value = (r.html.find('#header > p',first=True)).text
+    session = HTMLSession()
+    r = session.get('http://odium.kr')
+    r.html.render()
+    value = (r.html.find('#header > p',first=True)).text
 
 form_class = uic.loadUiType(form)[0]
 print('프로그램이 구동됩니다.')    
@@ -42,8 +43,12 @@ class SystemTrayIcon(QSystemTrayIcon):
         menu = QMenu(parent)
 
         infoAction = menu.addAction('프로그램 정보')
+        urlAction = menu.addAction('사이트 바로가기')
         creator = menu.addAction('제작자 | 오로라/창일')
         infoAction.triggered.connect(lambda: webbrowser.open_new_tab('https://github.com/memoday/odiumWidget'))
+        urlAction.triggered.connect(lambda: webbrowser.open_new_tab('https://odium.kr'))
+        creator.triggered.connect(lambda: print(value))
+
         menu.addSeparator()
         exitAction = menu.addAction("종료") 
         exitAction.triggered.connect(QCoreApplication.instance().quit)
@@ -60,6 +65,16 @@ class Thread1(QThread):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+    
+    def run(self):
+        self.timer = QTimer(self)
+        self.timer.start(1800000) #30분마다 value값 갱신
+        self.timer.timeout.connect(self.msg)
+
+    def msg(self):
+        updateValue()
+        self.parent.label_value.setText(str(value))
+        print('업데이트 성공: '+value)
 
 
 
@@ -78,18 +93,21 @@ class WindowClass(QWidget, form_class):
         posX, posY = (self.settings.value('pos')).split(',')
 
         try: 
-            self.move(int(posX),int(posY))
+            self.move(int(posX),int(posY)) #위젯 위치 복구
         except: 
             self.move(1650, 20)
 
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.rightMenu)
+
+        x = Thread1(self)
+        x.run()
     
 
         #프로그램 기본설정
         self.setWindowIcon(QIcon(icon))
-        self.setWindowTitle('오디움 Odium')
+        self.setWindowTitle('오디움 '+__version__)
 
         #실행 후 기본값 설정
         flags = Qt.WindowFlags(Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnBottomHint)
@@ -146,7 +164,7 @@ class WindowClass(QWidget, form_class):
 
 
         # Menu option events
-        changeBG.triggered.connect(lambda: self.label_bg.hide())
+        changeBG.triggered.connect(lambda: self.label_bg.show() if self.label_bg.isHidden() else self.label_bg.hide())
         changeRed.triggered.connect(lambda: self.label_value.setStyleSheet("color: red"))
         changeOrange.triggered.connect(lambda: self.label_value.setStyleSheet("color: orange"))
         changeYellow.triggered.connect(lambda: self.label_value.setStyleSheet("color: yellow"))
@@ -157,21 +175,19 @@ class WindowClass(QWidget, form_class):
 
         # Position
         menu.exec_(self.mapToGlobal(pos))
-    
-    def changeBG(self):
-        if self.label_bg.isHidden():
-            self.label_bg.show()
-        else:
-            self.label_bg.hide()
 
     def exit(self):
         sys.exit(0)
 
+def test():
+    print('hi')
+
 if __name__ == "__main__":
+    updateValue()
     app = QApplication(sys.argv) 
     myWindow = WindowClass() 
     trayIcon = SystemTrayIcon(QIcon(icon))
-    trayIcon.setToolTip('오디움 Odium')
+    trayIcon.setToolTip('오디움 '+__version__)
     trayIcon.show()
 
     app.exec_()
