@@ -12,10 +12,12 @@
 
 ## ▶ 사용방법 ◀
 
-#### odiumWidget.exe 실행
+#### Odium.exe 실행
 1. 바탕화면에 위젯 생성
 2. 클릭 드래그로 위젯 위치 자유롭게 이동 가능
 3. 위젯 우클릭을 통해 추가 기능 설정 가능
+4. 30분 주기로 심볼정보 자동갱신
+<br>
 
 
 ## ▶ 피드백 환영 ◀
@@ -27,4 +29,8 @@
 
 ## ▶ 스크린샷 ◀
 
-![image](https://user-images.githubusercontent.com/74040890/209037922-0771f82d-99a5-4976-9b85-d9f0cb8f8abf.png)
+![image](https://user-images.githubusercontent.com/74040890/209277289-df0bdd72-3709-4431-8fa1-d08fb7fc9955.png)
+![image](https://user-images.githubusercontent.com/74040890/209277333-f6654853-71f1-4ac3-8e8f-f24add9d3ecf.png)
+![image](https://user-images.githubusercontent.com/74040890/209277367-78574686-cf1a-4f16-b3e3-df25e0181913.png)
+
+
