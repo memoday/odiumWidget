@@ -1,25 +1,20 @@
-from bs4 import BeautifulSoup
-import datetime
 from PyQt5 import uic
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import os, sys
-import time
-from datetime import datetime
 from requests_html import HTMLSession
 import re
 import webbrowser
 
 __version__ = 'v1.0.0-alpha'
 
-
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
 form = resource_path('ui/main.ui')
-icon = resource_path('assets/ico.jpg')
+icon = resource_path('assets/changilSymbol.png')
 symbol = resource_path('assets/odium.png')
 bg = resource_path('assets/bg.png')
 
@@ -34,8 +29,6 @@ def updateValue():
 form_class = uic.loadUiType(form)[0]
 print('프로그램이 구동됩니다.')    
 
-today = datetime.today().date()
-
 class SystemTrayIcon(QSystemTrayIcon):
 
     def __init__(self, icon, parent=None):
@@ -47,7 +40,7 @@ class SystemTrayIcon(QSystemTrayIcon):
         creator = menu.addAction('제작자 | 오로라/창일')
         infoAction.triggered.connect(lambda: webbrowser.open_new_tab('https://github.com/memoday/odiumWidget'))
         urlAction.triggered.connect(lambda: webbrowser.open_new_tab('https://odium.kr'))
-        creator.triggered.connect(lambda: print(value))
+        creator.triggered.connect(lambda: webbrowser.open_new_tab('https://maple.gg/u/창일'))
 
         menu.addSeparator()
         exitAction = menu.addAction("종료") 
@@ -58,7 +51,7 @@ class SystemTrayIcon(QSystemTrayIcon):
 
     def Activation_Reason(self, index):
         if index == 2 :
-            print ("Double Click")
+            print ("미구현")
 
 
 class Thread1(QThread):
@@ -90,7 +83,10 @@ class WindowClass(QWidget, form_class):
         self.offset = None
 
         self.settings = QSettings('memoday','odiumWidget')
-        posX, posY = (self.settings.value('pos')).split(',')
+        try:
+            posX, posY = (self.settings.value('pos')).split(',')
+        except:
+            pass
 
         try: 
             self.move(int(posX),int(posY)) #위젯 위치 복구
@@ -178,9 +174,6 @@ class WindowClass(QWidget, form_class):
 
     def exit(self):
         sys.exit(0)
-
-def test():
-    print('hi')
 
 if __name__ == "__main__":
     updateValue()
