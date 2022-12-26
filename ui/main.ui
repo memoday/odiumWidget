@@ -45,7 +45,7 @@
     <string notr="true">color: white</string>
    </property>
    <property name="text">
-    <string>2/444</string>
+    <string>ERROR</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -85,7 +85,7 @@
      <x>0</x>
      <y>0</y>
      <width>250</width>
-     <height>230</height>
+     <height>250</height>
     </rect>
    </property>
    <property name="font">
@@ -98,7 +98,7 @@
     <string notr="true">color: red</string>
    </property>
    <property name="text">
-    <string>BG</string>
+    <string/>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

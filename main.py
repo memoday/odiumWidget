@@ -7,7 +7,7 @@ from requests_html import HTMLSession
 import re
 import webbrowser
 
-__version__ = 'v1.0.0-alpha'
+__version__ = 'v1.0.1-alpha'
 
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
@@ -25,6 +25,8 @@ def updateValue():
     r = session.get('http://odium.kr')
     r.html.render()
     value = (r.html.find('#header > p',first=True)).text
+    session.close()
+    print('불러온 값: '+value)
 
 form_class = uic.loadUiType(form)[0]
 print('프로그램이 구동됩니다.')    
@@ -35,12 +37,15 @@ class SystemTrayIcon(QSystemTrayIcon):
         QSystemTrayIcon.__init__(self, icon, parent)
         menu = QMenu(parent)
 
-        infoAction = menu.addAction('프로그램 정보')
+        reloadAction = menu.addAction('수동 갱신')
         urlAction = menu.addAction('사이트 바로가기')
-        creator = menu.addAction('제작자 | 오로라/창일')
+        menu.addSeparator()
+        infoAction = menu.addAction('프로그램 정보')
+        # creator = menu.addAction('제작자 | 오로라/창일')
+        reloadAction.triggered.connect(lambda: updateValue())
         infoAction.triggered.connect(lambda: webbrowser.open_new_tab('https://github.com/memoday/odiumWidget'))
         urlAction.triggered.connect(lambda: webbrowser.open_new_tab('https://odium.kr'))
-        creator.triggered.connect(lambda: webbrowser.open_new_tab('https://maple.gg/u/창일'))
+        # creator.triggered.connect(lambda: webbrowser.open_new_tab('https://maple.gg/u/창일'))
 
         menu.addSeparator()
         exitAction = menu.addAction("종료") 
@@ -61,7 +66,7 @@ class Thread1(QThread):
     
     def run(self):
         self.timer = QTimer(self)
-        self.timer.start(1800000) #30분마다 value값 갱신
+        self.timer.start(900000) #15분마다 value값 갱신
         self.timer.timeout.connect(self.msg)
 
     def msg(self):
@@ -83,24 +88,20 @@ class WindowClass(QWidget, form_class):
         self.offset = None
 
         self.settings = QSettings('memoday','odiumWidget')
-        try:
-            posX, posY = (self.settings.value('pos')).split(',')
-        except:
-            pass
 
-        try: 
-            self.move(int(posX),int(posY)) #위젯 위치 복구
-        except: 
+        try: #위젯 마지막 위치 값 불러오기
+            posX, posY = (self.settings.value('pos')).split(',')
+            self.move(int(posX),int(posY))
+        except:
             self.move(1650, 20)
 
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.rightMenu)
 
-        x = Thread1(self)
+        x = Thread1(self) #값 갱신 쓰레드 활성화
         x.run()
     
-
         #프로그램 기본설정
         self.setWindowIcon(QIcon(icon))
         self.setWindowTitle('오디움 '+__version__)
@@ -113,6 +114,19 @@ class WindowClass(QWidget, form_class):
         self.label_bg.setPixmap(QPixmap(bg))
         self.label_value.setText(str(value))
         self.label_value.setGraphicsEffect(shadow)
+
+        try: #배경 설정값 불러오기
+            bg_visible = (self.settings.value('bg_hidden'))
+            if bg_visible == 'false': 
+                self.label_bg.show()
+                print('배경 표시 True')
+            elif bg_visible == 'true':
+                self.label_bg.hide()
+            else:
+                pass
+        except:
+            self.label_bg.show()
+
         self.show()
     
 
@@ -161,6 +175,7 @@ class WindowClass(QWidget, form_class):
 
         # Menu option events
         changeBG.triggered.connect(lambda: self.label_bg.show() if self.label_bg.isHidden() else self.label_bg.hide())
+        changeBG.triggered.connect(lambda: self.settings.setValue('bg_hidden',self.label_bg.isHidden()))
         changeRed.triggered.connect(lambda: self.label_value.setStyleSheet("color: red"))
         changeOrange.triggered.connect(lambda: self.label_value.setStyleSheet("color: orange"))
         changeYellow.triggered.connect(lambda: self.label_value.setStyleSheet("color: yellow"))
