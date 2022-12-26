@@ -1,6 +1,4 @@
-> ### 테스트버전으로 프로그램이 불안정합니다. <br>관련 부분은 개선될 예정입니다.<br>
-
-# Odium Widget
+# 오디움 Odium Widget
 
 ## ▶ 유의사항 ◀
 - Windows의 PC 보호 창이 뜨면 '추가 정보 -> 실행'
@@ -19,12 +17,12 @@
 - 15분 주기로 심볼정보 자동갱신
 <br>
 
-## ▶ 시작프로그램 등록하기 ◀
+## ▶ 시작프로그램 등록 ◀
 1. odium.exe 우클릭 -> 바로가기 만들기
 2. Win + R 누르고 실행창에 shell:startup 입력 (혹은 해당 경로 C:\Users\{User}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup)
 3. 만들어둔 바로가기 파일 옮기기
 
-#### 시작프로그램 등록됐는지 확인하기
+### 시작프로그램 등록 확인
 1. 작업 관리자 실행(Ctrl + Shift + Esc)
 2. 시작프로그램 탭 선택
 3. odium.exe 등록유무 확인
@@ -43,6 +41,8 @@
 
 ![image](https://user-images.githubusercontent.com/74040890/209277289-df0bdd72-3709-4431-8fa1-d08fb7fc9955.png)
 ![image](https://user-images.githubusercontent.com/74040890/209277333-f6654853-71f1-4ac3-8e8f-f24add9d3ecf.png)
-![image](https://user-images.githubusercontent.com/74040890/209277367-78574686-cf1a-4f16-b3e3-df25e0181913.png)
+![image](https://user-images.githubusercontent.com/74040890/209518867-d5490a01-e4fa-4471-89d6-81726b5b6024.png)
+![image](https://user-images.githubusercontent.com/74040890/209518941-3dcb936e-3006-467d-bc6f-172a6a8521b1.png)
+
 
 
