@@ -10,9 +10,12 @@ import requests
 
 __version__ = 'v1.0.1'
 
+print('오디움 '+__version__)
+print('제작자 오로라/창일\n')
+
 latest_url = "https://api.github.com/repos/memoday/odiumWidget/releases/latest"
 gitAPI = requests.get(latest_url).json()
-print('Now version: '+__version__)
+print('Current version: '+__version__)
 print('Latest Version: '+gitAPI['tag_name'])
 __latest_version__ = gitAPI['tag_name']
 
@@ -27,16 +30,17 @@ bg = resource_path('assets/bg.png')
 
 def updateValue():
     global value
-
-    session = HTMLSession()
+    print('https://odium.kr에 접속하여 정보갱신을 합니다.')
     try: 
+        session = HTMLSession()
         r = session.get('http://odium.kr')
-        r.html.render()
+        r.html.render(sleep = 2, timeout = 20)
         value = (r.html.find('#header > p',first=True)).text
         session.close()
+        print('불러온 값: '+value)
     except:
-        value = 'Error'
-    print('불러온 값: '+value)
+        value = 'Exception Error'
+        print('Exception Error')
 
 form_class = uic.loadUiType(form)[0]
 print('프로그램이 구동됩니다.')   
@@ -164,8 +168,7 @@ class WindowClass(QWidget, form_class):
         menu = QMenu()
 
         # Add menu options
-        #  onTop = menu.addAction('항상 위에 있기')
-
+        # onTop = menu.addAction('항상 위에 있기')
         changeBG = menu.addAction('배경 제거')
         changeColor = menu.addMenu('색깔 변경')
         changeRed = changeColor.addAction('빨간색')
@@ -178,6 +181,8 @@ class WindowClass(QWidget, form_class):
 
 
         # Menu option events
+        # onTop.triggered.connect(lambda: self.setWindowFlags(Qt.WindowFlags(Qt.WindowStaysOnTopHint)))
+        # onTop.triggered.connect(lambda: self.show())
         changeBG.triggered.connect(lambda: self.label_bg.show() if self.label_bg.isHidden() else self.label_bg.hide())
         changeBG.triggered.connect(lambda: self.settings.setValue('bg_hidden',self.label_bg.isHidden()))
         changeRed.triggered.connect(lambda: self.label_value.setStyleSheet("color: red"))
@@ -202,5 +207,5 @@ if __name__ == "__main__":
     trayIcon.setToolTip('오디움 '+__version__)
     trayIcon.show()
     if __version__ != __latest_version__:
-        trayIcon.showMessage("오디움 Odium","최신 버전이 발견되었습니다.\n웹사이트에서 다운받아 주시길 바랍니다.",QIcon(icon),10000)
+        trayIcon.showMessage("오디움 Odium","최신버전이 발견되었습니다.\n웹사이트에서 다운받아 주시길 바랍니다.",QIcon(icon),10000)
     app.exec_()
