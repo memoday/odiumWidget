@@ -182,7 +182,7 @@ class WindowClass(QWidget, form_class):
         # onTop = menu.addAction('항상 위에 있기')
         changeBG = menu.addAction('배경 제거')
         changeFont = menu.addAction('폰트 변경')
-        changeColor = menu.addAction('색깔 변경')
+        changeColor = menu.addAction('색상 변경')
         # changeColor = menu.addMenu('색깔 변경')
         # changeRed = changeColor.addAction('빨간색')
 
