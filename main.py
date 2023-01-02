@@ -6,18 +6,19 @@ import os, sys
 from requests_html import HTMLSession
 import re
 import webbrowser
-import requests
 
-__version__ = 'v1.0.1'
+__version__ = 'v1.1.0'
 
 print('오디움 '+__version__)
 print('제작자 오로라/창일\n')
 
-latest_url = "https://api.github.com/repos/memoday/odiumWidget/releases/latest"
-gitAPI = requests.get(latest_url).json()
-print('Current version: '+__version__)
-print('Latest Version: '+gitAPI['tag_name'])
+gitSession = HTMLSession()
+r = gitSession.get('https://api.github.com/repos/memoday/odiumWidget/releases/latest')
+gitAPI = r.json()
+
 __latest_version__ = gitAPI['tag_name']
+print('Current version: '+__version__)
+print('Latest Version: '+__latest_version__)
 
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
@@ -44,6 +45,9 @@ def updateValue():
 
 form_class = uic.loadUiType(form)[0]
 print('프로그램이 구동됩니다.')   
+
+def changeFont():
+    print('Font Changed')
 
 class SystemTrayIcon(QSystemTrayIcon):
 
@@ -140,6 +144,18 @@ class WindowClass(QWidget, form_class):
         except:
             self.label_bg.show()
 
+        try: #폰트 설정값 불러오기
+            font = self.settings.value('font')
+            self.label_value.setFont(font)
+        except:
+            pass
+        
+        try:
+            color = self.settings.value('font-color')
+            self.label_value.setStyleSheet('QLabel { color: %s }' % color)
+        except:
+            pass
+
         self.show()
     
 
@@ -160,7 +176,6 @@ class WindowClass(QWidget, form_class):
         pos = re.findall('\(([^)]+)', str1)
         self.settings.setValue('pos',pos[0])
 
-
         self.offset = None
         super().mouseReleaseEvent(event)
 
@@ -170,38 +185,35 @@ class WindowClass(QWidget, form_class):
         # Add menu options
         # onTop = menu.addAction('항상 위에 있기')
         changeBG = menu.addAction('배경 제거')
-        changeColor = menu.addMenu('색깔 변경')
-        changeRed = changeColor.addAction('빨간색')
-        changeOrange = changeColor.addAction('주황색')
-        changeYellow = changeColor.addAction('노란색')
-        changeGreen = changeColor.addAction('초록색')
-        changeBlue = changeColor.addAction('파란색')
-        changeWhite = changeColor.addAction('하얀색')
-        changeBlack = changeColor.addAction('검정색')
+        changeFont = menu.addAction('폰트 변경')
+        changeColor = menu.addAction('색깔 변경')
+        # changeColor = menu.addMenu('색깔 변경')
+        # changeRed = changeColor.addAction('빨간색')
 
-
-        # Menu option events
-        # onTop.triggered.connect(lambda: self.setWindowFlags(Qt.WindowFlags(Qt.WindowStaysOnTopHint)))
-        # onTop.triggered.connect(lambda: self.show())
         changeBG.triggered.connect(lambda: self.label_bg.show() if self.label_bg.isHidden() else self.label_bg.hide())
         changeBG.triggered.connect(lambda: self.settings.setValue('bg_hidden',self.label_bg.isHidden()))
-        changeRed.triggered.connect(lambda: self.label_value.setStyleSheet("color: red"))
-        changeOrange.triggered.connect(lambda: self.label_value.setStyleSheet("color: orange"))
-        changeYellow.triggered.connect(lambda: self.label_value.setStyleSheet("color: yellow"))
-        changeGreen.triggered.connect(lambda: self.label_value.setStyleSheet("color: green"))
-        changeBlue.triggered.connect(lambda: self.label_value.setStyleSheet("color: blue"))
-        changeWhite.triggered.connect(lambda: self.label_value.setStyleSheet("color: white"))
-        changeBlack.triggered.connect(lambda: self.label_value.setStyleSheet("color: black"))
+        changeFont.triggered.connect(self.changeFont)
+        changeColor.triggered.connect(self.changeColor)
 
         # Position
         menu.exec_(self.mapToGlobal(pos))
 
-    def exit(self):
-        sys.exit(0)
+
+    def changeFont(self):
+        font, ok = QFontDialog.getFont()
+        self.label_value.setFont(font)
+        self.settings.setValue('font',font)
+
+    def changeColor(self):
+        col = QColorDialog.getColor()
+        if col.isValid():
+            self.label_value.setStyleSheet('QLabel { color: %s }' % col.name())
+            self.settings.setValue('font-color', col.name())
 
 if __name__ == "__main__":
     updateValue()
     app = QApplication(sys.argv)
+    app.setQuitOnLastWindowClosed(False)
     myWindow = WindowClass() 
     trayIcon = SystemTrayIcon(QIcon(icon))
     trayIcon.setToolTip('오디움 '+__version__)
