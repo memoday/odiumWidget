@@ -15,6 +15,7 @@ print('제작자 오로라/창일\n')
 gitSession = HTMLSession()
 r = gitSession.get('https://api.github.com/repos/memoday/odiumWidget/releases/latest')
 gitAPI = r.json()
+gitSession.close()
 
 __latest_version__ = gitAPI['tag_name']
 print('Current version: '+__version__)
@@ -46,9 +47,6 @@ def updateValue():
 form_class = uic.loadUiType(form)[0]
 print('프로그램이 구동됩니다.')   
 
-def changeFont():
-    print('Font Changed')
-
 class SystemTrayIcon(QSystemTrayIcon):
 
     def __init__(self, icon, parent=None):
@@ -73,7 +71,7 @@ class SystemTrayIcon(QSystemTrayIcon):
 
         self.setContextMenu(menu)
         self.activated.connect(self.Activation_Reason)
-
+    
     def Activation_Reason(self, index):
         if index == 2 :
             webbrowser.open_new_tab('https://odium.kr')
@@ -95,7 +93,6 @@ class Thread1(QThread):
         print('업데이트 성공: '+value)
 
 
-
 class WindowClass(QWidget, form_class):
 
     def __init__(self):
@@ -104,6 +101,7 @@ class WindowClass(QWidget, form_class):
 
         shadow = QGraphicsDropShadowEffect()
         shadow.setBlurRadius(15)
+        shadow.setOffset(4.0)
 
         self.offset = None
         self.settings = QSettings('memoday','odiumWidget')
@@ -135,9 +133,7 @@ class WindowClass(QWidget, form_class):
 
         try: #배경 설정값 불러오기
             bg_visible = (self.settings.value('bg_hidden'))
-            if bg_visible == 'false': 
-                self.label_bg.show()
-            elif bg_visible == 'true':
+            if bg_visible == 'true':
                 self.label_bg.hide()
             else:
                 self.label_bg.show()
@@ -209,6 +205,10 @@ class WindowClass(QWidget, form_class):
         if col.isValid():
             self.label_value.setStyleSheet('QLabel { color: %s }' % col.name())
             self.settings.setValue('font-color', col.name())
+    
+    def closeEvent(self, event):
+        os.system("taskkill /f /im chromium.exe") #chromium.exe 강제종료
+        sys.exit(0)
 
 if __name__ == "__main__":
     updateValue()
