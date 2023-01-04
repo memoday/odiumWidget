@@ -7,6 +7,7 @@ from requests_html import HTMLSession
 import re
 import webbrowser
 
+#QSettings path: HKEY_CURRENT_USER\Software\odium\odiumWidget
 __version__ = 'v1.1.0'
 
 print('오디움 '+__version__)
@@ -53,13 +54,11 @@ class SystemTrayIcon(QSystemTrayIcon):
         QSystemTrayIcon.__init__(self, icon, parent)
         menu = QMenu(parent)
 
-        reloadAction = menu.addAction('수동 갱신')
         urlAction = menu.addAction('사이트 바로가기')
         menu.addSeparator()
         infoAction = menu.addAction('프로그램 정보')
         latestAction = menu.addAction('최신버전 다운')
         # creator = menu.addAction('제작자 | 오로라/창일')
-        reloadAction.triggered.connect(lambda: updateValue())
         infoAction.triggered.connect(lambda: webbrowser.open_new_tab('https://github.com/memoday/odiumWidget'))
         urlAction.triggered.connect(lambda: webbrowser.open_new_tab('https://odium.kr'))
         latestAction.triggered.connect(lambda: webbrowser.open_new_tab('https://github.com/memoday/odiumWidget/releases'))
@@ -104,7 +103,7 @@ class WindowClass(QWidget, form_class):
         shadow.setOffset(4.0)
 
         self.offset = None
-        self.settings = QSettings('memoday','odiumWidget')
+        self.settings = QSettings('odium','odiumWidget')
 
         try: #위젯 마지막 위치 값 불러오기
             posX, posY = (self.settings.value('pos')).split(',')
@@ -180,12 +179,14 @@ class WindowClass(QWidget, form_class):
 
         # Add menu options
         # onTop = menu.addAction('항상 위에 있기')
+        manualUpdate = menu.addAction('수동 갱신')
         changeBG = menu.addAction('배경 제거')
         changeFont = menu.addAction('폰트 변경')
         changeColor = menu.addAction('색상 변경')
         # changeColor = menu.addMenu('색깔 변경')
         # changeRed = changeColor.addAction('빨간색')
 
+        manualUpdate.triggered.connect(self.manualUpdate)
         changeBG.triggered.connect(lambda: self.label_bg.show() if self.label_bg.isHidden() else self.label_bg.hide())
         changeBG.triggered.connect(lambda: self.settings.setValue('bg_hidden',self.label_bg.isHidden()))
         changeFont.triggered.connect(self.changeFont)
@@ -194,11 +195,16 @@ class WindowClass(QWidget, form_class):
         # Position
         menu.exec_(self.mapToGlobal(pos))
 
+    def manualUpdate(self):
+        updateValue()
+        self.label_value.setText(str(value))
+        print('수동 갱신 성공')
 
     def changeFont(self):
         font, ok = QFontDialog.getFont()
-        self.label_value.setFont(font)
-        self.settings.setValue('font',font)
+        if ok:
+            self.label_value.setFont(font)
+            self.settings.setValue('font',font)
 
     def changeColor(self):
         col = QColorDialog.getColor()
