@@ -185,7 +185,7 @@ class WindowClass(QWidget, form_class):
 
         # Add menu options
         # onTop = menu.addAction('항상 위에 있기')
-        manualUpdate = menu.addAction('수동 갱신')
+        manualUpdate = menu.addAction('수동 갱신 (&R)')
         toggleBG = menu.addAction('배경 제거')
         changeBG = menu.addAction('배경 변경')
         changeFont = menu.addAction('폰트 변경')
