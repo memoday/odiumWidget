@@ -36,7 +36,7 @@ def updateValue():
     print('https://odium.kr에 접속하여 정보갱신을 합니다.')
     try: 
         session = HTMLSession()
-        r = session.get('http://odium.kr')
+        r = session.get('https://odium.kr')
         r.html.render(sleep = 2, timeout = 20)
         value = (r.html.find('#header > p',first=True)).text
         session.close()
@@ -126,7 +126,7 @@ class WindowClass(QWidget, form_class):
         self.setWindowFlags(flags)
         self.setAttribute(Qt.WA_TranslucentBackground) #투명배경 적용
         self.label.setPixmap(QPixmap(symbol))
-        self.label_bg.setPixmap(QPixmap(bg))
+        # self.label_bg.setPixmap(QPixmap(bg))
         self.label_value.setText(str(value))
         self.label_value.setGraphicsEffect(shadow)
 
@@ -145,11 +145,17 @@ class WindowClass(QWidget, form_class):
         except:
             pass
         
-        try:
+        try: #색상 설정값 불러오기
             color = self.settings.value('font-color')
             self.label_value.setStyleSheet('QLabel { color: %s }' % color)
         except:
             pass
+    
+        try:
+            userBG = self.settings.value('background')
+            self.label_bg.setPixmap(userBG)
+        except:
+            self.label_bg.setPixmap(QPixmap(bg))
 
         self.show()
     
@@ -180,20 +186,49 @@ class WindowClass(QWidget, form_class):
         # Add menu options
         # onTop = menu.addAction('항상 위에 있기')
         manualUpdate = menu.addAction('수동 갱신')
-        changeBG = menu.addAction('배경 제거')
+        toggleBG = menu.addAction('배경 제거')
+        changeBG = menu.addAction('배경 변경')
         changeFont = menu.addAction('폰트 변경')
         changeColor = menu.addAction('색상 변경')
+        changeDefault = menu.addAction('설정 초기화')
         # changeColor = menu.addMenu('색깔 변경')
         # changeRed = changeColor.addAction('빨간색')
 
         manualUpdate.triggered.connect(self.manualUpdate)
-        changeBG.triggered.connect(lambda: self.label_bg.show() if self.label_bg.isHidden() else self.label_bg.hide())
-        changeBG.triggered.connect(lambda: self.settings.setValue('bg_hidden',self.label_bg.isHidden()))
+        toggleBG.triggered.connect(lambda: self.label_bg.show() if self.label_bg.isHidden() else self.label_bg.hide())
+        toggleBG.triggered.connect(lambda: self.settings.setValue('bg_hidden',self.label_bg.isHidden()))
+        changeBG.triggered.connect(self.changeBG)
         changeFont.triggered.connect(self.changeFont)
         changeColor.triggered.connect(self.changeColor)
+        changeDefault.triggered.connect(self.changeDefault)
 
         # Position
         menu.exec_(self.mapToGlobal(pos))
+
+
+    def changeDefault(self):
+        print('changeDefault')
+        defaultFont = self.label_value.font()
+        defaultFont.setFamily('Noto Sans KR')
+        defaultFont.setPointSize(13)
+        defaultFont.setBold(False)
+        self.label_value.setFont(defaultFont)
+        self.label_value.setStyleSheet('QLabel { color: white }')
+        self.label_bg.setPixmap(QPixmap(bg))
+
+        self.settings.setValue('font',defaultFont)
+        self.settings.setValue('font-color', 'white')
+        self.settings.setValue('background',QPixmap(bg))
+
+    def changeBG(self):
+        fname = QFileDialog.getOpenFileName(self, 'Open file', './',"Image files (*.jpg *.jpeg *.png)")
+
+        if fname[0]:
+            print(fname[0])
+            userBG = QPixmap(fname[0])
+            self.label_bg.setPixmap(userBG)
+            self.settings.setValue('background',userBG)
+
 
     def manualUpdate(self):
         updateValue()
