@@ -16,6 +16,7 @@ print('제작자 오로라/창일\n')
 gitSession = HTMLSession()
 r = gitSession.get('https://api.github.com/repos/memoday/odiumWidget/releases/latest')
 gitAPI = r.json()
+latestDownloadURL = gitAPI['assets'][0]['browser_download_url']
 gitSession.close()
 
 __latest_version__ = gitAPI['tag_name']
@@ -61,7 +62,7 @@ class SystemTrayIcon(QSystemTrayIcon):
         # creator = menu.addAction('제작자 | 오로라/창일')
         infoAction.triggered.connect(lambda: webbrowser.open_new_tab('https://github.com/memoday/odiumWidget'))
         urlAction.triggered.connect(lambda: webbrowser.open_new_tab('https://odium.kr'))
-        latestAction.triggered.connect(lambda: webbrowser.open_new_tab('https://github.com/memoday/odiumWidget/releases'))
+        latestAction.triggered.connect(self.checkUpdate)
         # creator.triggered.connect(lambda: webbrowser.open_new_tab('https://maple.gg/u/창일'))
 
         menu.addSeparator()
@@ -70,6 +71,13 @@ class SystemTrayIcon(QSystemTrayIcon):
 
         self.setContextMenu(menu)
         self.activated.connect(self.Activation_Reason)
+
+    def checkUpdate(self):
+        if __version__ != __latest_version__:
+            webbrowser.open_new_tab(latestDownloadURL)
+        else:
+            trayIcon.showMessage("오디움 Odium","현재 최신버전입니다.",QIcon(icon),10000)
+            print('최신버전입니다.')
     
     def Activation_Reason(self, index):
         if index == 2 :
