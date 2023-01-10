@@ -8,7 +8,7 @@ import re
 import webbrowser
 
 #QSettings path: HKEY_CURRENT_USER\Software\odium\odiumWidget
-__version__ = 'v1.1.0'
+__version__ = 'v1.2.0'
 
 print('오디움 '+__version__)
 print('제작자 오로라/창일\n')
@@ -212,7 +212,7 @@ class WindowClass(QWidget, form_class):
         print('changeDefault')
         defaultFont = self.label_value.font()
         defaultFont.setFamily('Noto Sans KR')
-        defaultFont.setPointSize(13)
+        defaultFont.setPointSize(12)
         defaultFont.setBold(False)
         self.label_value.setFont(defaultFont)
         self.label_value.setStyleSheet('QLabel { color: white }')
@@ -228,6 +228,12 @@ class WindowClass(QWidget, form_class):
         if fname[0]:
             print(fname[0])
             userBG = QPixmap(fname[0])
+            if userBG.width() > 300:
+                userBG = userBG.scaledToWidth(300)
+                print(userBG.size())
+            if userBG.height() > 300:
+                userBG = userBG.scaledToHeight(300)
+                print(userBG.size())
             self.label_bg.setPixmap(userBG)
             self.settings.setValue('background',userBG)
 
