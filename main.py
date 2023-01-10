@@ -91,7 +91,6 @@ class Thread1(QThread):
         self.parent.label_value.setText(str(value))
         print('업데이트 성공: '+value)
 
-
 class WindowClass(QWidget, form_class):
 
     def __init__(self):
@@ -130,7 +129,7 @@ class WindowClass(QWidget, form_class):
         self.label_value.setText(str(value))
         self.label_value.setGraphicsEffect(shadow)
 
-        try: #배경 설정값 불러오기
+        try: #배경 표시 유무 설정값 불러오기
             bg_visible = (self.settings.value('bg_hidden'))
             if bg_visible == 'true':
                 self.label_bg.hide()
@@ -151,7 +150,7 @@ class WindowClass(QWidget, form_class):
         except:
             pass
     
-        try:
+        try: #배경 이미지 설정값 불러오기
             userBG = self.settings.value('background')
             self.label_bg.setPixmap(userBG)
         except:
@@ -186,10 +185,13 @@ class WindowClass(QWidget, form_class):
         # Add menu options
         # onTop = menu.addAction('항상 위에 있기')
         manualUpdate = menu.addAction('수동 갱신 (&R)')
+        menu.addSeparator()
         toggleBG = menu.addAction('배경 제거')
         changeBG = menu.addAction('배경 변경')
+        menu.addSeparator()
         changeFont = menu.addAction('폰트 변경')
         changeColor = menu.addAction('색상 변경')
+        menu.addSeparator()
         changeDefault = menu.addAction('설정 초기화')
         # changeColor = menu.addMenu('색깔 변경')
         # changeRed = changeColor.addAction('빨간색')
