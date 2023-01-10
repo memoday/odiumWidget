@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>250</width>
-    <height>250</height>
+    <width>300</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="font">
@@ -24,15 +24,15 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>140</y>
-     <width>251</width>
-     <height>20</height>
+     <y>180</y>
+     <width>300</width>
+     <height>50</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <family>Noto Sans Korean Regular</family>
-     <pointsize>13</pointsize>
+     <pointsize>12</pointsize>
      <weight>50</weight>
      <bold>false</bold>
      <stylestrategy>PreferAntialias</stylestrategy>
@@ -58,9 +58,9 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>60</y>
-     <width>251</width>
-     <height>74</height>
+     <y>110</y>
+     <width>300</width>
+     <height>80</height>
     </rect>
    </property>
    <property name="font">
@@ -84,8 +84,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>250</width>
-     <height>250</height>
+     <width>300</width>
+     <height>300</height>
     </rect>
    </property>
    <property name="font">
