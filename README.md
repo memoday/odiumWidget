@@ -10,7 +10,7 @@
 
 ## ▶ 사용방법 ◀
 
-#### odium.exe 실행
+#### Odium.exe 실행
 - 바탕화면에 위젯 생성
 - 클릭 드래그로 위젯 위치 자유롭게 이동 가능
 - 위젯 우클릭을 통해 추가 기능 설정 가능
@@ -18,7 +18,9 @@
 <br>
 
 ## ▶ 시작프로그램 등록 ◀
-1. odium.exe 우클릭 -> 바로가기 만들기
+> __Note__  
+> [!] v1.2.0부터 자체적으로 시작프로그램 등록을 지원합니다.
+1. Odium.exe 우클릭 -> 바로가기 만들기
 2. Win + R 누르고 실행창에 shell:startup 입력 (혹은 해당 경로 C:\Users\{User}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup)
 3. 만들어둔 바로가기 파일 옮기기
 
@@ -26,7 +28,6 @@
 1. 작업 관리자 실행(Ctrl + Shift + Esc)
 2. 시작프로그램 탭 선택
 3. odium.exe 등록유무 확인
-
 
 <br>
 
