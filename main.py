@@ -29,7 +29,7 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 form = resource_path('ui/main.ui')
-icon = resource_path('assets/changilSymbol.png')
+icon = resource_path('assets/cs.png')
 symbol = resource_path('assets/odium.png')
 bg = resource_path('assets/bg.png')
 
@@ -270,7 +270,8 @@ class WindowClass(QWidget, form_class):
     def manualUpdate(self):
         updateValue()
         self.label_value.setText(str(value))
-        print('수동 갱신 성공')
+        trayIcon.showMessage("오디움 Odium","심볼이 갱신되었습니다.",QIcon(icon),10000)
+        print('수동 갱신 완료')
 
     def changeFont(self):
         font, ok = QFontDialog.getFont()
