@@ -8,6 +8,7 @@ import re
 import webbrowser
 
 #QSettings path: HKEY_CURRENT_USER\Software\odium\odiumWidget
+__RUN_PATH__ = 'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run'
 __version__ = 'v1.2.0'
 
 print('오디움 '+__version__)
@@ -195,6 +196,8 @@ class WindowClass(QWidget, form_class):
         manualUpdate = menu.addAction('수동 갱신 (&R)')
         menu.addSeparator()
         toggleBG = menu.addAction('배경 제거')
+        toggleBG.setCheckable(True)
+        toggleBG.setChecked(self.label_bg.isHidden())
         changeBG = menu.addAction('배경 변경')
         menu.addSeparator()
         changeFont = menu.addAction('폰트 변경')
@@ -211,6 +214,7 @@ class WindowClass(QWidget, form_class):
         changeFont.triggered.connect(self.changeFont)
         changeColor.triggered.connect(self.changeColor)
         changeDefault.triggered.connect(self.changeDefault)
+        changeDefault.triggered.connect(lambda: toggleBG.setChecked(self.label_bg.isHidden()))
 
         # Position
         menu.exec_(self.mapToGlobal(pos))
@@ -229,6 +233,7 @@ class WindowClass(QWidget, form_class):
         self.settings.setValue('font',defaultFont)
         self.settings.setValue('font-color', 'white')
         self.settings.setValue('background',QPixmap(bg))
+        
 
     def changeBG(self):
         fname = QFileDialog.getOpenFileName(self, 'Open file', './',"Image files (*.jpg *.jpeg *.png)")
