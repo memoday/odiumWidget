@@ -56,15 +56,22 @@ class SystemTrayIcon(QSystemTrayIcon):
         QSystemTrayIcon.__init__(self, icon, parent)
         menu = QMenu(parent)
 
+        self.settings = QSettings(__RUN_PATH__, QSettings.NativeFormat)
+
         urlAction = menu.addAction('사이트 바로가기')
         menu.addSeparator()
         infoAction = menu.addAction('프로그램 정보')
         latestAction = menu.addAction('최신버전 다운')
+        runOnBootAction = menu.addAction('시작프로그램 등록')
+        runOnBootAction.setCheckable(True)
+        runOnBootAction.setChecked(self.settings.contains("Odium"))
         # creator = menu.addAction('제작자 | 오로라/창일')
         infoAction.triggered.connect(lambda: webbrowser.open_new_tab('https://github.com/memoday/odiumWidget'))
         urlAction.triggered.connect(lambda: webbrowser.open_new_tab('https://odium.kr'))
         latestAction.triggered.connect(self.checkUpdate)
         # creator.triggered.connect(lambda: webbrowser.open_new_tab('https://maple.gg/u/창일'))
+        runOnBootAction.triggered.connect(self.runOnBoot)
+        runOnBootAction.triggered.connect(lambda: runOnBootAction.setChecked(self.settings.contains("Odium")))
 
         menu.addSeparator()
         exitAction = menu.addAction("종료") 
@@ -72,6 +79,15 @@ class SystemTrayIcon(QSystemTrayIcon):
 
         self.setContextMenu(menu)
         self.activated.connect(self.Activation_Reason)
+
+    def runOnBoot(self):
+        print('runOnBoot')
+        if self.settings.contains("Odium"):
+            self.settings.remove("Odium")
+        else:
+            self.settings.setValue("Odium",sys.argv[0])
+
+
 
     def checkUpdate(self):
         if __version__ != __latest_version__:
