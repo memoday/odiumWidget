@@ -9,7 +9,7 @@ import webbrowser
 
 #QSettings path: HKEY_CURRENT_USER\Software\odium\odiumWidget
 __RUN_PATH__ = 'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run'
-__version__ = 'v1.2.0'
+__version__ = 'v1.2.1'
 
 print('오디움 '+__version__)
 print('제작자 오로라/창일\n')
@@ -257,12 +257,9 @@ class WindowClass(QWidget, form_class):
         if fname[0]:
             print(fname[0])
             userBG = QPixmap(fname[0])
-            if userBG.width() > 300:
-                userBG = userBG.scaledToWidth(300)
-                print(userBG.size())
-            if userBG.height() > 300:
-                userBG = userBG.scaledToHeight(300)
-                print(userBG.size())
+            if userBG.width() > 300 or userBG.height() > 300:
+                print('img is larger than 300x300')
+                userBG = userBG.scaled(300,300,aspectRatioMode=Qt.KeepAspectRatio,transformMode= Qt.SmoothTransformation)
             self.label_bg.setPixmap(userBG)
             self.settings.setValue('background',userBG)
 
