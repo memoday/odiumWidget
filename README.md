@@ -13,16 +13,25 @@
 #### Odium.exe 실행
 - 바탕화면에 위젯 생성
 - 클릭 드래그로 위젯 위치 자유롭게 이동 가능
-- 위젯 우클릭을 통해 추가 기능 설정 가능
 - 일정 주기로 심볼정보 자동갱신
+- 위젯 우클릭 시 위젯 메뉴 표시
+  - 수동갱신
+  - 배경제거
+  - 배경변경
+    - 배경 이미지 크기는 최대 300x300까지 지원합니다.
+  - 폰트변경
+  - 색상변경
+  - 설정 초기화
+    - 배경, 폰트, 색상 설정을 기본값으로 초기화합니다. (오디움 기본 배경 & Noto Sans KR 12pt)
+- 트레이아이콘 우클릭 시 트레이아이콘 메뉴 표시
+  - 사이트 바로가기
+    - https://odium.kr를 웹브라우저에서 실행합니다.
+  - 프로그램 정보
+  - 시작프로그램 등록
+  - 최신버전 다운
+    - 구버전 사용 중일 경우 최신버전 다운로드 링크에 접속하여 바로 다운을 시작합니다.
+  - 종료
 <br>
-
-## ▶ 시작프로그램 등록 ◀
-> __Note__  
-> [!] v1.2.0부터 자체적으로 시작프로그램 등록을 지원합니다.
-1. Odium.exe 우클릭 -> 바로가기 만들기
-2. Win + R 누르고 실행창에 shell:startup 입력 (혹은 해당 경로 C:\Users\{User}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup)
-3. 만들어둔 바로가기 파일 옮기기
 
 ### 시작프로그램 등록 확인
 1. 작업 관리자 실행(Ctrl + Shift + Esc)
@@ -40,10 +49,11 @@
 
 ## ▶ 스크린샷 ◀
 
-![image](https://user-images.githubusercontent.com/74040890/209277289-df0bdd72-3709-4431-8fa1-d08fb7fc9955.png)
-![image](https://user-images.githubusercontent.com/74040890/209277333-f6654853-71f1-4ac3-8e8f-f24add9d3ecf.png)
-![image](https://user-images.githubusercontent.com/74040890/209518867-d5490a01-e4fa-4471-89d6-81726b5b6024.png)
-![image](https://user-images.githubusercontent.com/74040890/209518941-3dcb936e-3006-467d-bc6f-172a6a8521b1.png)
+![image](https://user-images.githubusercontent.com/74040890/211983549-4b771038-6b49-4f59-8351-a99882bcfed6.png)
+![image](https://user-images.githubusercontent.com/74040890/211983683-677eecbb-8111-4c85-9914-8c7ea1ef0d91.png)
+![image](https://user-images.githubusercontent.com/74040890/211983570-a0a149d0-8779-4bf1-9bfe-fe5f74265293.png)
+![image](https://user-images.githubusercontent.com/74040890/211983591-dceb9f28-06ed-4eff-98f4-791d4a169f6d.png)
+
 
 
 
