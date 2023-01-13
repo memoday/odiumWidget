@@ -14,13 +14,18 @@ __version__ = 'v1.2.1'
 print('오디움 '+__version__)
 print('제작자 오로라/창일\n')
 
-gitSession = HTMLSession()
-r = gitSession.get('https://api.github.com/repos/memoday/odiumWidget/releases/latest')
-gitAPI = r.json()
-latestDownloadURL = gitAPI['assets'][0]['browser_download_url']
-gitSession.close()
+try:
+    gitSession = HTMLSession()
+    r = gitSession.get('https://api.github.com/repos/memoday/odiumWidget/releases/latest')
+    gitAPI = r.json()
+    gitSession.close()
+    latestDownloadURL = gitAPI['assets'][0]['browser_download_url']
+    __latest_version__ = gitAPI['tag_name']
+except:
+    print('Github API를 불러오는데 실패했습니다.')
+    latestDownloadURL = ('https://github.com/memoday/odiumWidget/releases/latest')
+    __latest_version__ = __version__
 
-__latest_version__ = gitAPI['tag_name']
 print('Current version: '+__version__)
 print('Latest Version: '+__latest_version__)
 
@@ -44,8 +49,8 @@ def updateValue():
         session.close()
         print('불러온 값: '+value)
     except:
-        value = 'Exception Error'
-        print('Exception Error')
+        value = '갱신 실패'
+        print('updateValue Error')
 
 form_class = uic.loadUiType(form)[0]
 print('프로그램이 구동됩니다.')   
@@ -133,7 +138,7 @@ class WindowClass(QWidget, form_class):
             posX, posY = (self.settings.value('pos')).split(',')
             self.move(int(posX),int(posY))
         except:
-            self.move(1650, 20)
+            print('No settings for pos')
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.rightMenu)
