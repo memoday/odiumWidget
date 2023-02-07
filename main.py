@@ -9,7 +9,7 @@ import webbrowser
 
 #QSettings path: HKEY_CURRENT_USER\Software\odium\odiumWidget
 __RUN_PATH__ = 'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run'
-__version__ = 'v1.2.1'
+__version__ = 'v1.2.2'
 
 print('오디움 '+__version__)
 print('제작자 오로라/창일\n')
@@ -45,7 +45,9 @@ def updateValue():
         session = HTMLSession()
         r = session.get('https://odium.kr')
         r.html.render(sleep = 2, timeout = 20)
-        value = (r.html.find('#header > p',first=True)).text
+        crawledValue = (r.html.find('#header > p',first=True)).text
+        nowValue, maxValue = crawledValue.split("/")
+        value = nowValue+"/"+maxValue
         session.close()
         print('불러온 값: '+value)
     except:
