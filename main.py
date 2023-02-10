@@ -14,6 +14,8 @@ __version__ = 'v1.2.2'
 print('오디움 '+__version__)
 print('제작자 오로라/창일\n')
 
+dateVar = QDate.currentDate()
+
 try:
     gitSession = HTMLSession()
     r = gitSession.get('https://api.github.com/repos/memoday/odiumWidget/releases/latest')
@@ -44,14 +46,14 @@ def updateValue():
     try: 
         session = HTMLSession()
         r = session.get('https://odium.kr')
-        r.html.render(sleep = 2, timeout = 20)
+        r.html.render(sleep = 1, timeout = 10)
         crawledValue = (r.html.find('#header > p',first=True)).text
         nowValue, maxValue = crawledValue.split("/")
         value = nowValue+"/"+maxValue
         session.close()
         print('불러온 값: '+value)
     except:
-        value = '갱신 실패'
+        value = 'Error'
         print('updateValue Error')
 
 form_class = uic.loadUiType(form)[0]
@@ -72,11 +74,9 @@ class SystemTrayIcon(QSystemTrayIcon):
         runOnBootAction = menu.addAction('시작프로그램 등록')
         runOnBootAction.setCheckable(True)
         runOnBootAction.setChecked(self.settings.contains("Odium"))
-        # creator = menu.addAction('제작자 | 오로라/창일')
         infoAction.triggered.connect(lambda: webbrowser.open_new_tab('https://github.com/memoday/odiumWidget'))
         urlAction.triggered.connect(lambda: webbrowser.open_new_tab('https://odium.kr'))
         latestAction.triggered.connect(self.checkUpdate)
-        # creator.triggered.connect(lambda: webbrowser.open_new_tab('https://maple.gg/u/창일'))
         runOnBootAction.triggered.connect(self.runOnBoot)
         runOnBootAction.triggered.connect(lambda: runOnBootAction.setChecked(self.settings.contains("Odium")))
 
@@ -93,8 +93,6 @@ class SystemTrayIcon(QSystemTrayIcon):
             self.settings.remove("Odium")
         else:
             self.settings.setValue("Odium",sys.argv[0])
-
-
 
     def checkUpdate(self):
         if __version__ != __latest_version__:
@@ -115,13 +113,19 @@ class Thread1(QThread):
     
     def run(self):
         self.timer = QTimer(self)
-        self.timer.start(900000) #15분마다 value값 갱신
+        self.timer.start(900000) #15분마다 날짜 체크 후 value값 갱신 시도
         self.timer.timeout.connect(self.msg)
 
     def msg(self):
-        updateValue()
-        self.parent.label_value.setText(str(value))
-        print('업데이트 성공: '+value)
+        global dateVar
+        updatedDateVar = QDate.currentDate()
+        if (dateVar != updatedDateVar):
+            updateValue()
+            self.parent.label_value.setText(str(value))
+            dateVar = updatedDateVar
+            print('업데이트 성공: '+value)
+        else:
+            print('날짜가 바뀌지 않아 심볼값을 갱신하지 않습니다.')
 
 class WindowClass(QWidget, form_class):
 
@@ -215,7 +219,6 @@ class WindowClass(QWidget, form_class):
         menu = QMenu()
 
         # Add menu options
-        # onTop = menu.addAction('항상 위에 있기')
         manualUpdate = menu.addAction('수동 갱신 (&R)')
         menu.addSeparator()
         toggleBG = menu.addAction('배경 제거')
@@ -274,8 +277,12 @@ class WindowClass(QWidget, form_class):
     def manualUpdate(self):
         updateValue()
         self.label_value.setText(str(value))
-        trayIcon.showMessage("오디움 Odium","심볼이 갱신되었습니다.",QIcon(icon),10000)
-        print('수동 갱신 완료')
+        if value == 'Error':
+            trayIcon.showMessage("오디움 Odium","심볼 갱신에 실패했습니다.",QIcon(icon),10000)
+            print('수동 갱신 실패')
+        else:
+            trayIcon.showMessage("오디움 Odium","심볼이 갱신되었습니다.",QIcon(icon),10000)
+            print('수동 갱신 완료')
 
     def changeFont(self):
         font, ok = QFontDialog.getFont()
