@@ -82,7 +82,8 @@ class SystemTrayIcon(QSystemTrayIcon):
 
         menu.addSeparator()
         exitAction = menu.addAction("종료") 
-        exitAction.triggered.connect(QCoreApplication.instance().quit)
+        # exitAction.triggered.connect(QCoreApplication.instance().quit)
+        exitAction.triggered.connect(WindowClass().closeEvent)
 
         self.setContextMenu(menu)
         self.activated.connect(self.Activation_Reason)
@@ -298,7 +299,7 @@ class WindowClass(QWidget, form_class):
     
     def closeEvent(self, event):
         os.system("taskkill /f /im chromium.exe") #chromium.exe 강제종료
-        sys.exit(0)
+        app.quit()
 
 if __name__ == "__main__":
     updateValue()
