@@ -6,6 +6,7 @@ import os, sys
 from requests_html import HTMLSession
 import re
 import webbrowser
+import psutil
 
 #QSettings path: HKEY_CURRENT_USER\Software\odium\odiumWidget
 __RUN_PATH__ = 'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run'
@@ -14,22 +15,31 @@ __version__ = 'v1.2.2'
 print('오디움 '+__version__)
 print('제작자 오로라/창일\n')
 
+def check_if_running():
+    for process in psutil.process_iter(['name']):
+        if process.info['name'] == "Odium.exe":
+            return True
+    return False
+
 dateVar = QDate.currentDate()
 
-try:
-    gitSession = HTMLSession()
-    r = gitSession.get('https://api.github.com/repos/memoday/odiumWidget/releases/latest')
-    gitAPI = r.json()
-    gitSession.close()
-    latestDownloadURL = gitAPI['assets'][0]['browser_download_url']
-    __latest_version__ = gitAPI['tag_name']
-except:
-    print('Github API를 불러오는데 실패했습니다.')
-    latestDownloadURL = ('https://github.com/memoday/odiumWidget/releases/latest')
-    __latest_version__ = __version__
+def checkLatestVersion():
+    global latestDownloadURL
+    global __latest_version__
+    try:
+        gitSession = HTMLSession()
+        r = gitSession.get('https://api.github.com/repos/memoday/odiumWidget/releases/latest')
+        gitAPI = r.json()
+        gitSession.close()
+        latestDownloadURL = gitAPI['assets'][0]['browser_download_url']
+        __latest_version__ = gitAPI['tag_name']
+    except:
+        print('Github API를 불러오는데 실패했습니다.')
+        latestDownloadURL = ('https://github.com/memoday/odiumWidget/releases/latest')
+        __latest_version__ = __version__
 
-print('Current version: '+__version__)
-print('Latest Version: '+__latest_version__)
+    print('Current version: '+__version__)
+    print('Latest Version: '+__latest_version__)
 
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
@@ -302,8 +312,17 @@ class WindowClass(QWidget, form_class):
         app.quit()
 
 if __name__ == "__main__":
-    updateValue()
     app = QApplication(sys.argv)
+    if check_if_running():
+        running = QMessageBox()
+        running.setWindowIcon(QIcon(icon))
+        running.setIcon(QMessageBox.Warning)
+        running.setWindowTitle("알림")
+        running.setText("오디움이 이미 실행 중입니다.")
+        running.exec_()
+        sys.exit(1)
+    checkLatestVersion()
+    updateValue()
     app.setQuitOnLastWindowClosed(False)
     myWindow = WindowClass() 
     trayIcon = SystemTrayIcon(QIcon(icon))
