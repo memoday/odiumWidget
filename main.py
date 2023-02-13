@@ -6,22 +6,43 @@ import os, sys
 from requests_html import HTMLSession
 import re
 import webbrowser
-import psutil
 
 #QSettings path: HKEY_CURRENT_USER\Software\odium\odiumWidget
 __RUN_PATH__ = 'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run'
 __version__ = 'v1.2.2'
 
+dateVar = QDate.currentDate()
+
 print('오디움 '+__version__)
 print('제작자 오로라/창일\n')
 
-def check_if_running():
-    for process in psutil.process_iter(['name']):
-        if process.info['name'] == "Odium.exe":
-            return True
-    return False
 
-dateVar = QDate.currentDate()
+def resource_path(relative_path):
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
+form = resource_path('ui/main.ui')
+icon = resource_path('assets/cs.png')
+symbol = resource_path('assets/odium.png')
+bg = resource_path('assets/bg.png')
+form_class = uic.loadUiType(form)[0]
+print('프로그램이 구동됩니다.')
+
+def updateValue():
+    global value
+    print('https://odium.kr에 접속하여 정보갱신을 합니다.')
+    try: 
+        session = HTMLSession()
+        r = session.get('https://odium.kr')
+        r.html.render(sleep = 1, timeout = 10)
+        crawledValue = (r.html.find('#header > p',first=True)).text
+        nowValue, maxValue = crawledValue.split("/")
+        value = nowValue+"/"+maxValue
+        session.close()
+        print('불러온 값: '+value)
+    except:
+        value = 'Error'
+        print('updateValue Error')
 
 def checkLatestVersion():
     global latestDownloadURL
@@ -40,34 +61,6 @@ def checkLatestVersion():
 
     print('Current version: '+__version__)
     print('Latest Version: '+__latest_version__)
-
-def resource_path(relative_path):
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(base_path, relative_path)
-
-form = resource_path('ui/main.ui')
-icon = resource_path('assets/cs.png')
-symbol = resource_path('assets/odium.png')
-bg = resource_path('assets/bg.png')
-
-def updateValue():
-    global value
-    print('https://odium.kr에 접속하여 정보갱신을 합니다.')
-    try: 
-        session = HTMLSession()
-        r = session.get('https://odium.kr')
-        r.html.render(sleep = 1, timeout = 10)
-        crawledValue = (r.html.find('#header > p',first=True)).text
-        nowValue, maxValue = crawledValue.split("/")
-        value = nowValue+"/"+maxValue
-        session.close()
-        print('불러온 값: '+value)
-    except:
-        value = 'Error'
-        print('updateValue Error')
-
-form_class = uic.loadUiType(form)[0]
-print('프로그램이 구동됩니다.')   
 
 class SystemTrayIcon(QSystemTrayIcon):
 
@@ -312,17 +305,9 @@ class WindowClass(QWidget, form_class):
         app.quit()
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    if check_if_running():
-        running = QMessageBox()
-        running.setWindowIcon(QIcon(icon))
-        running.setIcon(QMessageBox.Warning)
-        running.setWindowTitle("알림")
-        running.setText("오디움이 이미 실행 중입니다.")
-        running.exec_()
-        sys.exit(1)
     checkLatestVersion()
     updateValue()
+    app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
     myWindow = WindowClass() 
     trayIcon = SystemTrayIcon(QIcon(icon))
