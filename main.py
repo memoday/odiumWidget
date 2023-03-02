@@ -16,7 +16,6 @@ dateVar = QDate.currentDate()
 print('오디움 '+__version__)
 print('제작자 오로라/창일\n')
 
-
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
@@ -85,7 +84,6 @@ class SystemTrayIcon(QSystemTrayIcon):
 
         menu.addSeparator()
         exitAction = menu.addAction("종료") 
-        # exitAction.triggered.connect(QCoreApplication.instance().quit)
         exitAction.triggered.connect(WindowClass().closeEvent)
 
         self.setContextMenu(menu)
@@ -108,7 +106,6 @@ class SystemTrayIcon(QSystemTrayIcon):
     def Activation_Reason(self, index):
         if index == 2 :
             webbrowser.open_new_tab('https://odium.kr')
-
 
 class Thread1(QThread):
     def __init__(self, parent):
