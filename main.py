@@ -84,7 +84,7 @@ class SystemTrayIcon(QSystemTrayIcon):
 
         menu.addSeparator()
         exitAction = menu.addAction("종료") 
-        exitAction.triggered.connect(WindowClass().closeEvent)
+        exitAction.triggered.connect(QCoreApplication.instance().quit)
 
         self.setContextMenu(menu)
         self.activated.connect(self.Activation_Reason)
@@ -305,7 +305,6 @@ if __name__ == "__main__":
     checkLatestVersion()
     updateValue()
     app = QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False)
     myWindow = WindowClass() 
     trayIcon = SystemTrayIcon(QIcon(icon))
     trayIcon.setToolTip('오디움 '+__version__)
