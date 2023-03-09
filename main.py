@@ -39,9 +39,10 @@ def updateValue():
         value = nowValue+"/"+maxValue
         session.close()
         print('불러온 값: '+value)
-    except:
+    except Exception as e:
         value = 'Error'
         print('updateValue Error')
+        print(e)
 
 def checkLatestVersion():
     global latestDownloadURL
