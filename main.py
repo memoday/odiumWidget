@@ -6,6 +6,7 @@ import os, sys
 import requests
 import re
 import webbrowser
+import datetime
 
 #QSettings path: HKEY_CURRENT_USER\Software\odium\odiumWidget
 __RUN_PATH__ = 'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run'
@@ -26,16 +27,13 @@ form_class = uic.loadUiType(form)[0]
 print('프로그램이 구동됩니다.')
 
 def checkLatestVersion():
-    global latestDownloadURL
     global __latest_version__
     try:
         url = 'https://api.github.com/repos/memoday/odiumWidget/releases/latest'
         gitAPI = requests.get(url).json()
-        latestDownloadURL = gitAPI['assets'][0]['browser_download_url']
         __latest_version__ = gitAPI['tag_name']
     except:
         print('Github API를 불러오는데 실패했습니다.')
-        latestDownloadURL = ('https://github.com/memoday/odiumWidget/releases/latest')
         __latest_version__ = __version__
 
     print('Current version: '+__version__)
@@ -49,7 +47,7 @@ class SystemTrayIcon(QSystemTrayIcon):
 
         self.settings = QSettings(__RUN_PATH__, QSettings.NativeFormat)
 
-        urlAction = menu.addAction('사이트 바로가기')
+        urlAction = menu.addAction('Odium.kr')
         menu.addSeparator()
         infoAction = menu.addAction('프로그램 정보')
         latestAction = menu.addAction('최신버전 다운')
@@ -77,11 +75,7 @@ class SystemTrayIcon(QSystemTrayIcon):
             self.settings.setValue("Odium",sys.argv[0])
 
     def checkUpdate(self):
-        if __version__ != __latest_version__:
-            webbrowser.open_new_tab(latestDownloadURL)
-        else:
-            trayIcon.showMessage("오디움 Odium","현재 최신버전입니다.",QIcon(icon),10000)
-            print('최신버전입니다.')
+        webbrowser.open_new_tab("https://odium.kr/widget")
     
     def Activation_Reason(self, index):
         if index == 2 :
@@ -89,12 +83,25 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 class Thread1(QThread):
 
-    value_changed = pyqtSignal(str)
+    value_changed = pyqtSignal(object)
     
+    def __init__(self):
+        super().__init__()
+        self.current_date = QDate.currentDate()
+
     def run(self):
         while True:
-            self.updateValue()
-            self.msleep(60000)
+            if self.checkDateChange():
+                print('dateChanged')
+                self.updateValue()
+            self.msleep(600000)
+
+    def checkDateChange(self):
+        new_date = QDate.currentDate()
+        if new_date != self.current_date:
+            self.current_date = new_date
+            return True
+        return False
 
     def updateValue(self):
         print('심볼 갱신')
@@ -107,11 +114,10 @@ class Thread1(QThread):
         except Exception as error:
             print(error)
             self.value_changed.emit(error)
-            return error
 
 class WindowClass(QWidget, form_class):
 
-    def __init__(self):
+    def __init__(self, trayIcon):
         super().__init__()
         self.setupUi(self)
 
@@ -175,6 +181,7 @@ class WindowClass(QWidget, form_class):
             self.label_bg.setPixmap(QPixmap(bg))
 
         self.show()
+        self.thread.updateValue()
         self.thread.start()
     
 
@@ -209,9 +216,9 @@ class WindowClass(QWidget, form_class):
         toggleBG.setChecked(self.label_bg.isHidden())
         changeBG = menu.addAction('배경 변경')
         menu.addSeparator()
-        changeFont = menu.addAction('폰트 변경')
-        changeColor = menu.addAction('색상 변경')
-        menu.addSeparator()
+        # changeFont = menu.addAction('폰트 변경')
+        # changeColor = menu.addAction('색상 변경')
+        # menu.addSeparator()
         changeDefault = menu.addAction('설정 초기화')
         # changeColor = menu.addMenu('색깔 변경')
         # changeRed = changeColor.addAction('빨간색')
@@ -220,8 +227,8 @@ class WindowClass(QWidget, form_class):
         toggleBG.triggered.connect(lambda: self.label_bg.show() if self.label_bg.isHidden() else self.label_bg.hide())
         toggleBG.triggered.connect(lambda: self.settings.setValue('bg_hidden',self.label_bg.isHidden()))
         changeBG.triggered.connect(self.changeBG)
-        changeFont.triggered.connect(self.changeFont)
-        changeColor.triggered.connect(self.changeColor)
+        # changeFont.triggered.connect(self.changeFont)
+        # changeColor.triggered.connect(self.changeColor)
         changeDefault.triggered.connect(self.changeDefault)
         changeDefault.triggered.connect(lambda: toggleBG.setChecked(self.label_bg.isHidden()))
 
@@ -258,19 +265,23 @@ class WindowClass(QWidget, form_class):
         self.thread.updateValue()
     
     def updateLabelValue(self, value):
-        self.label_value.setText(value)
+        if isinstance(value, str):
+            self.label_value.setText(value)
+        elif isinstance(value, Exception):
+            self.label_value.setText("Error")
+            trayIcon.showMessage("오디움 Odium",f"오류: {value}.",QIcon(icon),10000)
 
-    def changeFont(self):
-        font, ok = QFontDialog.getFont()
-        if ok:
-            self.label_value.setFont(font)
-            self.settings.setValue('font',font)
+    # def changeFont(self):
+    #     font, ok = QFontDialog.getFont()
+    #     if ok:
+    #         self.label_value.setFont(font)
+    #         self.settings.setValue('font',font)
         
-    def changeColor(self):
-        col = QColorDialog.getColor()
-        if col.isValid():
-            self.label_value.setStyleSheet('QLabel { color: %s }' % col.name())
-            self.settings.setValue('font-color', col.name())
+    # def changeColor(self):
+    #     col = QColorDialog.getColor()
+    #     if col.isValid():
+    #         self.label_value.setStyleSheet('QLabel { color: %s }' % col.name())
+    #         self.settings.setValue('font-color', col.name())
 
     def closeEvent(self, event):
         os.system("taskkill /f /im chromium.exe") #chromium.exe 강제종료
@@ -278,10 +289,10 @@ class WindowClass(QWidget, form_class):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    myWindow = WindowClass() 
     trayIcon = SystemTrayIcon(QIcon(icon))
     trayIcon.setToolTip('오디움 '+__version__)
     trayIcon.show()
+    myWindow = WindowClass(trayIcon) 
     checkLatestVersion()
     if __version__ != __latest_version__:
         trayIcon.showMessage("오디움 Odium","최신버전이 발견되었습니다.\n웹사이트에서 다운받아 주시길 바랍니다.",QIcon(icon),10000)
